@@ -1,10 +1,10 @@
-name: "Build Conan deps"
+name: "Build Conan deps (debug)"
 on:
   push:
 
 jobs:
   build:
-    name: Build Conan deps
+    name: Build Conan deps (debug)
     runs-on: [ubuntu-22.04]
     env:
       CMAKE_CXX_COMPILER_LAUNCHER: ccache
@@ -71,13 +71,13 @@ jobs:
           path: lsp-framework
 
       - name: Build Slang
-        run: cd slang/recipes/slang; conan create all/conanfile.py --version=9.1 --build=missing
+        run: cd slang/recipes/slang; conan create all/conanfile.py --version=9.1 --build=missing --profile=debug
 
       - name: Build lsp-framework
-        run: cd lsp-framework/recipes/lsp-framework; conan create all/conanfile.py --version=1.2.0 --build=missing
+        run: cd lsp-framework/recipes/lsp-framework; conan create all/conanfile.py --version=1.2.0 --build=missing --profile=debug
 
       - name: Build repo
-        run: cd main; just conan
+        run: cd main; just conan_debug
 
       # this can take a NUMBER of attempts for whatever reason
       - name: Upload deps

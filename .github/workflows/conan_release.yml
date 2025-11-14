@@ -1,0 +1,89 @@
+name: "Build Conan deps (release)"
+on:
+  push:
+
+jobs:
+  build:
+    name: Build Conan deps (release)
+    runs-on: [ubuntu-22.04]
+    env:
+      CMAKE_CXX_COMPILER_LAUNCHER: ccache
+      CMAKE_C_COMPILER_LAUNCHER: ccache
+      CC: /usr/lib/ccache/clang-20
+      CXX: /usr/lib/ccache/clang++-20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: main
+
+      - name: Install base deps
+        run: sudo apt update; sudo apt install -y sudo wget lsb-release lsb-release wget
+          software-properties-common gnupg curl build-essential make python3 python3-dev python-is-python3 clang
+          ninja-build
+
+      - name: Install Clang
+        run: cd /tmp;
+          wget https://apt.llvm.org/llvm.sh;
+          chmod +x llvm.sh;
+          sudo ./llvm.sh 20
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          create-symlink: true
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '4.1.x'
+
+      - name: Install Just
+        uses: extractions/setup-just@v3
+
+      - name: Install Conan
+        uses: conan-io/setup-conan@v1
+        with:
+          cache_packages: true
+
+      - name: Setup Conan profile
+        run: cd main; conan config install .
+
+      - name: Check that Conan hasn't fucked up our profiles
+        run: conan profile show
+        continue-on-error: true
+
+      - name: Setup Conan remote
+        run: conan remote add lagoon https://conan.mlyoung.cool --force;
+          conan remote login lagoon ci -p ${{ secrets.CONAN_PASSWORD }}
+
+      - name: Checkout Slang patch
+        uses: actions/checkout@v5
+        with:
+          repository: mattyoung101/conan-center-index
+          ref: slang
+          path: slang
+
+      - name: Checkout lsp-framework patch
+        uses: actions/checkout@v5
+        with:
+          repository: mattyoung101/conan-center-index
+          ref: lsp-framework
+          path: lsp-framework
+
+      - name: Build Slang
+        run: cd slang/recipes/slang; conan create all/conanfile.py --version=9.1 --build=missing
+
+      - name: Build lsp-framework
+        run: cd lsp-framework/recipes/lsp-framework; conan create all/conanfile.py --version=1.2.0 --build=missing
+
+      - name: Build repo
+        run: cd main; just conan
+
+      # this can take a NUMBER of attempts for whatever reason
+      - name: Upload deps
+        run: |
+         for i in $(seq 1 5);
+          do
+            conan upload -v -r lagoon "*" --confirm
+          done
+        continue-on-error: true
