@@ -7,6 +7,8 @@ class BuilderConan(ConanFile):
         "slang/9.1",
         "yaml-cpp/0.8.0",
         "lsp-framework/1.2.0"
+        "sqlitecpp/3.3.3",
+        "sqlite3/3.50.4",
     ]
     settings = "os", "arch", "compiler", "build_type"
 

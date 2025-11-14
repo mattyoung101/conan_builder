@@ -82,7 +82,7 @@ jobs:
       # this can take a NUMBER of attempts for whatever reason
       - name: Upload deps
         run: |
-         for i in $(seq 1 10);
+         for i in $(seq 1 5);
           do
             conan upload -v -r lagoon "*" --confirm
           done
