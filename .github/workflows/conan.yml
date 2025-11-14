@@ -77,8 +77,13 @@ jobs:
         run: cd lsp-framework/recipes/lsp-framework; conan create all/conanfile.py --version=1.2.0 --build=missing
 
       - name: Build repo
-        run: just conan
+        run: cd main; just conan
 
+      # this can take a NUMBER of attempts for whatever reason
       - name: Upload deps
-        run: conan upload -v -r lagoon "*" --confirm
+        run: |
+         for i in $(seq 1 10);
+          do
+            conan upload -v -r lagoon "*" --confirm
+          done
         continue-on-error: true
