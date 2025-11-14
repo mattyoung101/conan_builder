@@ -48,8 +48,14 @@ jobs:
       # ref: https://github.com/conan-io/conan/issues/12833#issuecomment-3503964233
       # this is indescribably fucking stupid, but "conan config install profiles/" just flat out DOES NOT
       # FUCKING WORK despite what upstream says.
+      # you know what, conan config install just straight up does not fucking work. so we'll do this shit the
+      # fucking hard way. fuck you.
       - name: Setup Conan profile
-        run: conan config install .
+        run: conan profile detect --force; cp profiles/ ~/.conan2/
+
+      - name: Check that Conan hasn't fucked up our profiles
+        run: conan profile show
+        continue-on-error: true
 
       - name: Setup Conan remote
         run: conan remote add lagoon https://conan.mlyoung.cool --force;
