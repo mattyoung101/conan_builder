@@ -45,9 +45,9 @@ jobs:
         with:
           cache_packages: true
 
+      # ref: https://github.com/conan-io/conan/issues/12833#issuecomment-3503964233
       - name: Setup Conan profile
-        run: conan profile detect --force;
-          conan profile update settings.compiler.cppstd=gnu20 default
+        run: conan config install -tf profiles/ profiles/default
 
       - name: Setup Conan remote
         run: conan remote add lagoon https://conan.mlyoung.cool --force;
