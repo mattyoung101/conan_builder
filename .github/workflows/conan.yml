@@ -46,17 +46,10 @@ jobs:
           cache_packages: true
 
       # ref: https://github.com/conan-io/conan/issues/12833#issuecomment-3503964233
-      - name: Setup Conan profile
-        run: conan config install profiles/default
-        continue-on-error: true
-
-      - name: Setup Conan profile
-        run: conan config install profiles; conan config install .
-        continue-on-error: true
-
+      # this is indescribably fucking stupid, but "conan config install profiles/" just flat out DOES NOT
+      # FUCKING WORK despite what upstream says.
       - name: Setup Conan profile
         run: conan config install .
-        continue-on-error: true
 
       - name: Setup Conan remote
         run: conan remote add lagoon https://conan.mlyoung.cool --force;
