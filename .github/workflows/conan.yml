@@ -74,7 +74,7 @@ jobs:
         run: cd slang/recipes/slang; conan create all/conanfile.py --version=9.1 --build=missing
 
       - name: Build lsp-framework
-        run: cd lsp-framework/recipes/lsp-framework; conan create all/conanfile.py --version=9.1 --build=missing
+        run: cd lsp-framework/recipes/lsp-framework; conan create all/conanfile.py --version=1.2.0 --build=missing
 
       - name: Build repo
         run: just conan
