@@ -9,6 +9,7 @@ class BuilderConan(ConanFile):
         "lsp-framework/1.2.0",
         "sqlitecpp/3.3.3",
         "sqlite3/3.50.4",
+        "xxhash/0.8.3",
     ]
     settings = "os", "arch", "compiler", "build_type"
 
