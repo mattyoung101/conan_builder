@@ -18,7 +18,8 @@ jobs:
 
       - name: Install base deps
         run: sudo apt update; sudo apt install -y sudo wget lsb-release lsb-release wget
-          software-properties-common gnupg curl build-essential make python3 python3-dev python-is-python3
+          software-properties-common gnupg curl build-essential make python3 python3-dev python-is-python3 clang
+          ninja-build
 
       - name: Install Clang
         run: cd /tmp;
@@ -51,9 +52,6 @@ jobs:
         run: conan remote add lagoon https://conan.mlyoung.cool --force;
           conan remote login lagoon ci -p ${{ secrets.CONAN_PASSWORD }}
 
-      - name: Install more system deps
-        run: sudo apt update; sudo apt install --yes clang ninja-build
-
       - name: Checkout Slang patch
         uses: actions/checkout@v5
         with:
@@ -67,6 +65,15 @@ jobs:
           repository: mattyoung101/conan-center-index
           branch: lsp-framework
           path: lsp-framework
+
+      - name: Build Slang
+        run: cd slang/recipes/slang; conan create all/conanfile.py --version=9.1 --build=missing
+
+      - name: Build lsp-framework
+        run: cd lsp-framework/recipes/lsp-framework; conan create all/conanfile.py --version=9.1 --build=missing
+
+      - name: Build repo
+        run: just conan
 
       - name: Upload deps
         run: conan upload -v -r lagoon "*" --confirm
