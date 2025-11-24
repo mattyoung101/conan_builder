@@ -70,8 +70,8 @@ jobs:
           ref: lsp-framework
           path: lsp-framework
 
-      - name: Build Slang
-        run: cd slang/recipes/slang; conan create all/conanfile.py --version=9.1 --build=missing --profile=debug
+      # - name: Build Slang
+      #   run: cd slang/recipes/slang; conan create all/conanfile.py --version=9.1 --build=missing --profile=debug
 
       - name: Build lsp-framework
         run: cd lsp-framework/recipes/lsp-framework; conan create all/conanfile.py --version=1.2.0 --build=missing --profile=debug
